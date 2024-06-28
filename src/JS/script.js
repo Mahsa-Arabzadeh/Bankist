@@ -85,3 +85,20 @@ const displayMovements = (movements) => {
 };
 
 displayMovements(account1.movements);
+
+// * create a username for accounts 
+// const user = "Steven Thomas Williams"
+// const userName = user.toLowerCase().split(" ").map(word => 
+//   word.at(0)
+// ).join("")
+
+
+// console.log(userName);
+
+function createUsernames(accs) {
+  accs.forEach(acc => {
+    acc.username = acc.owner.toLowerCase().split(" ").map(word =>
+      word.at(0)
+    ).join("")
+  })
+}
