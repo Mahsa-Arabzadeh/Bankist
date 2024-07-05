@@ -108,27 +108,50 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300]
 
 const eurToUsd = 1.1
 const totalDepositsUSD = movements.filter(mov => mov > 0).map((mov, i, arr) => {
-  console.log(arr);
   return mov * eurToUsd
 }).reduce((acc, mov) => acc + mov, 0)
 
-console.log(totalDepositsUSD);
 
-
-function calcDisplaySummary(movements) {
-  const incomes = movements.filter(mov => mov > 0).reduce((acc, mov) => acc + mov, 0)
+function calcDisplaySummary(acc) {
+  const incomes = acc.movements.filter(mov => mov > 0).reduce((acc, mov) => acc + mov, 0)
   labelSumIn.textContent = `${incomes}€`
 
   // * calc outcome
-  const outcome = movements.filter(mov => mov < 0).reduce((acc, mov) => acc + mov, 0)
+  const outcome = acc.movements.filter(mov => mov < 0).reduce((acc, mov) => acc + mov, 0)
   labelSumOut.textContent = `${Math.abs(outcome)}€`
 
   // * calc interest 
-  const interest = movements.filter(mov => mov > 0).map(deposit => (deposit * 1.2) / 100).filter((int,i,arr) => {
-    console.log(arr);
+  const interest = acc.movements.filter(mov => mov > 0).map(deposit => (deposit * acc.interestRate) / 100).filter((int, i, arr) => {
     return int >= 1
   }).reduce((acc, int) => acc + int, 0)
   labelSumInterest.textContent = `${interest}€`
 }
 
-calcDisplaySummary(account1.movements)
+
+
+// Event handlers
+let currentAccount;
+
+btnLogin.addEventListener("click", function (e) {
+  e.preventDefault()
+
+  currentAccount = accounts.find(acc => acc.username === inputLoginUsername.value);
+
+  console.log(currentAccount);
+
+  if(currentAccount?.pin === Number(inputLoginPin.value)){
+    // display UI and message
+    labelWelcome.textContent = `Welcome back, ${currentAccount.owner.split(" ")[0]}`
+    containerApp.style.opacity = 1
+
+    // Clear input fields 
+    inputLoginUsername.value = inputLoginPin.value = ""
+    inputLoginPin.blur()
+    // display movements 
+    displayMovements(currentAccount.movements)
+    // display balance
+    calcDisplayBalance(currentAccount.movements)
+    // display summary
+    calcDisplaySummary(currentAccount)
+  }
+})
